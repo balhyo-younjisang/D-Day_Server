@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { auth, database } from "./firebase";
 
 // "development"를 NODE_ENV 기본값으로 설정
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
@@ -11,4 +12,6 @@ export default {
   api: {
     prefix: "/api/v1",
   },
+  database: database,
+  auth: auth,
 };
