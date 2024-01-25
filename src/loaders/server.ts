@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import config from "../config";
+import routes from "../api";
 import helmet from "helmet";
 import hpp from "hpp";
 
@@ -22,6 +23,7 @@ export default ({ app }: { app: express.Application }) => {
   app.use(hpp());
   app.use(express.json());
   app.use(express.urlencoded());
+  app.use(config.api.prefix, routes());
 
   // 404 에러 캐치
   app.use((req, res, next) => {

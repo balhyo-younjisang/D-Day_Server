@@ -20,6 +20,7 @@ async function startServer() {
     `);
     })
     .on("error", (err) => {
+      console.log(err);
       process.exit(1);
     });
 }
