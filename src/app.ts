@@ -9,6 +9,7 @@ async function startServer() {
   const app = express();
 
   Loader({ expressApp: app });
+  console.log(app.route('/user'));
 
   app
     .listen(config.port, () => {
