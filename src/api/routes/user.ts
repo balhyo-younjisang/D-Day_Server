@@ -23,8 +23,13 @@ const validationSchema = {
   }),
 };
 
-route.post('/register', upload.single('image'), celebrate(validationSchema), async (req: MulterRequest, res: Response, next: NextFunction) => {
+
+
+export default (app: Router) => {
+  app.use(`/user`, route);
+  route.post('/register', upload.single('image'), celebrate(validationSchema), async (req: MulterRequest, res: Response, next: NextFunction) => {
     try {
+      console.log("hi");
       const imageBuffer = req.file.buffer;
       const {id, username, email, password } = req.body;
   
@@ -42,7 +47,32 @@ route.post('/register', upload.single('image'), celebrate(validationSchema), asy
       next(e);
     }
   });
+  route.post('/oauth/google/register', async(req:Request, res:Response) => {
+    try{
 
-export default (app: Router) => {
-  app.use(`/user`, route);
+    }catch{
+
+    }
+  })
+  route.post('/oauth/google/login', async(req:Request, res:Response) => {
+    try{
+
+    } catch{
+
+    }
+  })
+  route.post('/oauth/kakao/register', async(req:Request, res:Response) => {
+    try{
+
+    }catch{
+      
+    }
+  })
+  route.post('/oauth/kakao/login', async(req:Request, res:Response) => {
+    try{
+
+    } catch{
+
+    }
+  })
 }
