@@ -4,6 +4,7 @@ import config from "./config";
 
 import Loader from "./loaders";
 import Logger from "./loaders/logger";
+import 'reflect-metadata';
 
 async function startServer() {
   const app = express();

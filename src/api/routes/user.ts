@@ -17,7 +17,7 @@ interface MulterRequest extends Request {
 
 const validationSchema = {
   body: Joi.object({
-    username: Joi.string().required(),
+    name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
@@ -27,45 +27,40 @@ const validationSchema = {
 
 export default (app: Router) => {
   app.use(`/user`, route);
-  route.post('/register', upload.single('image'), celebrate(validationSchema), async (req: MulterRequest, res: Response, next: NextFunction) => {
+  route.post('/register', upload.single('image'), async (req: MulterRequest, res: Response, next: NextFunction) => {
     try {
-      console.log("hi");
       const imageBuffer = req.file.buffer;
-      const {id, username, email, password } = req.body;
+      const base64Image = imageBuffer.toString('base64');
+      const {id, name, password } = req.body;
   
       const userServiceInstance = Container.get(UserService);
+      console.log(req.body);
       const emailRegistered = await userServiceInstance.SignUp({
-          name: username,
-          email: email,
+          name: name,
           password: password,
-          profile: imageBuffer,
+          profile: base64Image,
           id: id
       });
   
       res.status(201).json({ email: emailRegistered });
     } catch (e) {
+      console.log(e);
       next(e);
     }
   });
-  route.post('/oauth/google/register', async(req:Request, res:Response) => {
-    try{
-
-    }catch{
-
-    }
-  })
   route.post('/oauth/google/login', async(req:Request, res:Response) => {
     try{
-
+      console.log("hi");
+      const userServiceInstance = Container.get(UserService);
+      console.log("get");
+      const googleRegistered = await userServiceInstance.OAuthLogin({
+        email: req.body.email,
+        name: req.body.name,
+        id: req.body.uid,
+        profile: undefined
+      })
     } catch{
 
-    }
-  })
-  route.post('/oauth/kakao/register', async(req:Request, res:Response) => {
-    try{
-
-    }catch{
-      
     }
   })
   route.post('/oauth/kakao/login', async(req:Request, res:Response) => {
