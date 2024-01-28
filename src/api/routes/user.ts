@@ -4,6 +4,7 @@ import { celebrate, Joi } from "celebrate";
 import { Container } from "typedi";
 import UserService from "@/services/user";
 import { IUser, IUserSignDTO } from "@/interface/IUser";
+import TokenService from "@/services/token";
 
 const route = Router();
 const storage = multer.memoryStorage();
@@ -48,6 +49,23 @@ export default (app: Router) => {
       next(e);
     }
   });
+  route.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {id, name, password } = req.body;
+  
+      const userServiceInstance = Container.get(UserService);
+      console.log(req.body);
+      const emailRegistered = await userServiceInstance.Login({
+          password: password,
+          id: id
+      });
+  
+      res.status(201).json({ email: emailRegistered });
+    } catch (e) {
+      console.log(e);
+      next(e);
+    }
+  });
   route.post('/oauth/google/login', async(req:Request, res:Response) => {
     try{
       console.log("hi");
@@ -57,8 +75,9 @@ export default (app: Router) => {
         email: req.body.email,
         name: req.body.name,
         id: req.body.uid,
-        profile: undefined
+        profile: null
       })
+      
     } catch{
 
     }

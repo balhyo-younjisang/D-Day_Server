@@ -18,6 +18,6 @@ export interface IUserSignDTO extends IUser{
     profile: Buffer,
 }
 export interface IUserLoginDTO{
-    email: string,
+    id: string,
     password: string,
 }

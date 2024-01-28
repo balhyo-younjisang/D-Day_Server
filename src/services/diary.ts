@@ -5,7 +5,7 @@ import { auth, database } from "@/config/firebase";
 const firebase = require('firebase/firestore')
 
 @Service()
-export default class TokenService {
+export default class DiaryService {
     constructor(@Inject("logger") private logger) {}
 
     public async makeDiary(diaryData: IDiary){
@@ -16,7 +16,7 @@ export default class TokenService {
         }
     }
 
-    public async getDiary(author: string){
+    public async getDiaries(author: string){
         try {
             const diaryItems = await firebase.getDoc(firebase.collection(database, 'diary'));
             const itemsArray = diaryItems.docs.map((doc) => {
@@ -27,6 +27,19 @@ export default class TokenService {
             console.log(itemsArray);
         } catch (error) {
             console.log(error);
+        }
+    }
+    public async getDiary(id: string){
+        try{
+            const diaryItems = await firebase.getDoc(firebase.collection(database, 'diary'));
+            const itemsArray = diaryItems.docs.map((doc) => {
+                if(id === doc.id){
+                    return { id: doc.id, ...doc.data() };
+                }
+            });
+            console.log(itemsArray);
+        }catch{
+
         }
     }
 }

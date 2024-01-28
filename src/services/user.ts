@@ -1,7 +1,7 @@
 import { auth, database } from "@/config/firebase";
 import { IUser, IUserLoginDTO, IUserOAuthDTO, IUserSDTO, IUserSignDTO } from "@/interface/IUser";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, doc, setDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc, getDocs } from "firebase/firestore";
 import { Inject, Service } from "typedi";
 
 
@@ -18,6 +18,18 @@ export default class UserService {
       return "hi";
     } catch (e) {
       throw e;
+    }
+  }
+  public async Login(userDTO: IUserLoginDTO){
+    try {
+      const userDoc = await getDocs(collection(database,'users'));
+      const itemsArray = userDoc.docs.map((doc) => {
+        if(userDTO.id === doc.data().id){
+          return { id: doc.id, ...doc.data() };
+        }
+      });
+    } catch (error) {
+      
     }
   }
   public async OAuthLogin(userLogin: IUserOAuthDTO):Promise<void>{
