@@ -1,9 +1,8 @@
 import { auth, database } from "@/config/firebase";
 import { IUser, IUserLoginDTO, IUserOAuthDTO, IUserSDTO, IUserSignDTO } from "@/interface/IUser";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc } from "firebase/firestore";
 import { Inject, Service } from "typedi";
-const firestoreDB = require("firebase/firestore");
 
 
 @Service()
@@ -14,8 +13,8 @@ export default class UserService {
     try {
 
       const {name, profile, id} = userInputDTO
-      const item = await firestoreDB.addDoc(firestoreDB.collection(database, 'users'), {userInputDTO});
-      console.log(item);
+      const user = await addDoc(collection(database, 'users'), {userInputDTO});
+      console.log(user);
       return "hi";
     } catch (e) {
       throw e;
