@@ -20,16 +20,24 @@ export default class UserService {
       throw e;
     }
   }
-  public async Login(userDTO: IUserLoginDTO){
+  public async Login(userDTO: IUserLoginDTO) {
     try {
-      const userDoc = await getDocs(collection(database,'users'));
-      const itemsArray = userDoc.docs.map((doc) => {
-        if(userDTO.id === doc.data().id){
-          return { id: doc.id, ...doc.data() };
+      const userDocs = await getDocs(collection(database, 'users'));
+      const users = userDocs.docs.map((doc) => {
+        const userData = doc.data().userInputDTO;
+        if (userDTO.id === userData.id) {
+          const { password, ...userWithoutPassword } = userData;
+          return userWithoutPassword;
         }
+        return null;
       });
+
+      const validUsers = users.filter((user) => user !== null);
+  
+      return validUsers;
     } catch (error) {
-      
+      console.error(error);
+      throw error;
     }
   }
   public async OAuthLogin(userLogin: IUserOAuthDTO):Promise<void>{

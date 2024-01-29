@@ -51,16 +51,18 @@ export default (app: Router) => {
   });
   route.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {id, name, password } = req.body;
+      const {id, password } = req.body;
   
       const userServiceInstance = Container.get(UserService);
-      console.log(req.body);
-      const emailRegistered = await userServiceInstance.Login({
+      const tokenServiceInstance = Container.get(TokenService);
+      const loginUser = await userServiceInstance.Login({
           password: password,
           id: id
       });
+      const loginToken = tokenServiceInstance.LoginToken(loginUser[0]);
+      console.log(loginToken);
   
-      res.status(201).json({ email: emailRegistered });
+      res.status(201).json({ token: loginToken });
     } catch (e) {
       console.log(e);
       next(e);
