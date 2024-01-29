@@ -25,7 +25,8 @@ export default class UserService {
       const userDocs = await getDocs(collection(database, 'users'));
       const users = userDocs.docs.map((doc) => {
         const userData = doc.data().userInputDTO;
-        if (userDTO.id === userData.id) {
+        if (userDTO.id === userData.id && userDTO.password === userData.password) {
+
           const { password, ...userWithoutPassword } = userData;
           return userWithoutPassword;
         }

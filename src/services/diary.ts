@@ -38,8 +38,8 @@ export default class DiaryService {
                 }
             });
             console.log(itemsArray);
-        }catch{
-
+        }catch(error){
+            console.log(error);
         }
     }
 }

@@ -5,6 +5,7 @@ import { Container } from "typedi";
 import UserService from "@/services/user";
 import { IUser, IUserSignDTO } from "@/interface/IUser";
 import TokenService from "@/services/token";
+const admin = require('firebase-admin')
 
 const route = Router();
 const storage = multer.memoryStorage();
