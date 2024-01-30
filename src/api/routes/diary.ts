@@ -10,15 +10,17 @@ const route = Router();
 export default (app: Router) => {
     app.use(`/diary`, route);
     const DiaryServiceInstance = Container.get(DiaryService);
-    route.get('/:user', verifyToken, async(req:NextRequest, res:Response)=>{
+    route.get('/mydiary/:user', verifyToken, async(req:NextRequest, res:Response)=>{
         const user = req.params.user;
         const userToken = req.verifiedToken;
         if(userToken instanceof Object){
             console.log(userToken);
         }
     })
-    route.post('/delete', verifyToken, async(req:Request, res:Response)=>{
-
+    route.delete('/mydiary/:user', verifyToken, async(req:NextRequest, res:Response)=>{
+        const user = req.params.user;
     })
-    route
+    route.patch('/mydiary/:user', verifyToken, async(req:NextRequest, res:Response)=>{
+        const user = req.params.user;
+    })
 }

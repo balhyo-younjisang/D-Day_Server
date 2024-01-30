@@ -6,7 +6,6 @@ export interface IDiary {
     contents: string,
     tags: string[],
     author: string,
-    comment?: IComment[]
 }
 export interface IDiaryDTO extends IDiary {
     id: string

@@ -1,9 +1,11 @@
 import { auth, database } from "@/config/firebase";
 import { IUser, IUserLoginDTO, IUserOAuthDTO, IUserSDTO, IUserSignDTO } from "@/interface/IUser";
+import { storage } from "firebase-admin";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, doc, setDoc, addDoc, getDocs } from "firebase/firestore";
 import { Inject, Service } from "typedi";
-
+const firebase = require('firebase/storage');
+const storageRef = firebase.ref();
 
 @Service()
 export default class UserService {
