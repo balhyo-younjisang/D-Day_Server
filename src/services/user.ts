@@ -1,5 +1,6 @@
 import { auth, database } from "@/config/firebase";
 import { IUser, IUserLoginDTO, IUserOAuthDTO, IUserSDTO, IUserSignDTO } from "@/interface/IUser";
+import { error } from "console";
 import { storage } from "firebase-admin";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, doc, setDoc, addDoc, getDocs } from "firebase/firestore";
@@ -13,8 +14,13 @@ export default class UserService {
 
   public async SignUp(userInputDTO: IUserSDTO): Promise<String> {
     try {
-
-      const {name, profile, id} = userInputDTO
+      const userDocs = await getDocs(collection(database, 'users'));
+      const users = userDocs.docs.map((doc) => {
+        const userData = doc.data().userInputDTO;
+        if (userInputDTO.id === userData.id) {
+          return null;
+        }
+      });
       const user = await addDoc(collection(database, 'users'), {userInputDTO});
       console.log(user);
       return "hi";

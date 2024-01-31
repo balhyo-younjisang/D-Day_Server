@@ -1,6 +1,6 @@
-import { IDiary } from "@/interface/IDiary";
+import { IDiary, IDiaryDTO } from "@/interface/IDiary";
 import { Inject, Service } from "typedi";
-import { getFirestore, collection, doc, setDoc, addDoc, getDoc} from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc} from "firebase/firestore";
 import { auth, database } from "@/config/firebase";
 const firebase = require('firebase/firestore')
 
@@ -39,6 +39,22 @@ export default class DiaryService {
             });
             console.log(itemsArray);
         }catch(error){
+            console.log(error);
+        }
+    }
+    public async editDiary(diaryData: IDiaryDTO){
+        try {
+            const diaryItems = await firebase.getDoc(firebase.collection(database, 'diary'));   
+            diaryItems.forEach(async (doc) => {
+                const { id } = doc.id;
+          
+                if (diaryData.id === id) {
+                  await updateDoc(doc.ref, { ...diaryData });
+                  return;
+                }
+        
+            });
+        } catch (error) {
             console.log(error);
         }
     }
