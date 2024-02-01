@@ -5,9 +5,8 @@ import { Container } from "typedi";
 import UserService from "@/services/user";
 import { IUser, IUserSignDTO } from "@/interface/IUser";
 import TokenService from "@/services/token";
-import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { firestorage } from "@/config/firebase";
-const admin = require('firebase-admin')
 
 const route = Router();
 const storage = multer.memoryStorage();
@@ -23,10 +22,17 @@ interface MulterRequest extends Request {
 const validationSchema = {
   body: Joi.object({
     name: Joi.string().required(),
-    email: Joi.string().email().required(),
+    id: Joi.string().required(),
     password: Joi.string().required(),
   }),
 };
+
+const validLoginSchema = {
+  body: Joi.object({
+    id: Joi.string().required(),
+    password: Joi.string().required(),
+  }),
+}
 
 
 
