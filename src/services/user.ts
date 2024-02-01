@@ -14,11 +14,15 @@ export default class UserService {
 
   public async SignUp(userInputDTO: IUserSDTO): Promise<String> {
     try {
+      console.log(`
+        서비스
+        ${JSON.stringify(userInputDTO)}
+      `)
       const userDocs = await getDocs(collection(database, 'users'));
       const users = userDocs.docs.map((doc) => {
         const userData = doc.data().userInputDTO;
         if (userInputDTO.id === userData.id) {
-          return null;
+          throw Error;
         }
       });
       const user = await addDoc(collection(database, 'users'), {userInputDTO});

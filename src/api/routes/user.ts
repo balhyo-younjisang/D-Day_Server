@@ -5,6 +5,8 @@ import { Container } from "typedi";
 import UserService from "@/services/user";
 import { IUser, IUserSignDTO } from "@/interface/IUser";
 import TokenService from "@/services/token";
+import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
+import { firestorage } from "@/config/firebase";
 const admin = require('firebase-admin')
 
 const route = Router();
@@ -14,6 +16,7 @@ const upload: Multer = multer({ storage: storage });
 interface MulterRequest extends Request {
   file: {
     buffer: Buffer;
+    mimetype: string;
   };
 }
 
@@ -32,15 +35,22 @@ export default (app: Router) => {
   route.post('/register', upload.single('image'), async (req: MulterRequest, res: Response, next: NextFunction) => {
     try {
       const imageBuffer = req.file.buffer;
+      console.log(req.file.mimetype);
       const base64Image = imageBuffer.toString('base64');
       const {id, name, password } = req.body;
+      const locationRef = ref(
+        firestorage,
+        `profile/${id}`
+      )
+      const result = await uploadBytes(locationRef, imageBuffer, {contentType: req.file.mimetype});
+      const imgurl = await getDownloadURL(result.ref);
+      console.log(imgurl);
   
       const userServiceInstance = Container.get(UserService);
-      console.log(req.body);
       const emailRegistered = await userServiceInstance.SignUp({
           name: name,
           password: password,
-          profile: base64Image,
+          profile: imgurl,
           id: id
       });
   
@@ -60,8 +70,7 @@ export default (app: Router) => {
           password: password,
           id: id
       });
-      const loginToken = tokenServiceInstance.LoginToken(loginUser[0]);
-      console.log(loginToken);
+      const loginToken = await tokenServiceInstance.LoginToken(loginUser[0]);
   
       res.status(201).json({ token: loginToken });
     } catch (e) {
