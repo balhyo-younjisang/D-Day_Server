@@ -10,13 +10,14 @@ export default class DiaryService {
 
     public async makeDiary(diaryData: IDiary){
         try{
+            console.log(diaryData);
             const user = await addDoc(collection(database, 'diary'), {diaryData});
-        }catch{
-
+        }catch(error){
+            console.log(error);
         }
     }
 
-    public async getDiaries(author: string){
+    public async getMyDiaries(author: string){
         try {
             const diaryItems = await firebase.getDoc(firebase.collection(database, 'diary'));
             const itemsArray = diaryItems.docs.map((doc) => {
@@ -48,10 +49,10 @@ export default class DiaryService {
             diaryItems.forEach(async (doc) => {
                 const { id } = doc.id;
           
-                if (diaryData.id === id) {
-                  await updateDoc(doc.ref, { ...diaryData });
-                  return;
-                }
+                // if (diaryData.id === id) {
+                //   await updateDoc(doc.ref, { ...diaryData });
+                //   return;
+                // }
         
             });
         } catch (error) {

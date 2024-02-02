@@ -8,15 +8,16 @@ dotenv.config();
 
 const jwt = require('jsonwebtoken');
 export interface NextRequest extends Request{
-  verifiedToken: string | Object;
+  verifiedToken: string | IToken;
 }
 
 export const verifyToken = (req: NextRequest, res: Response, next: NextFunction) => {
   // 인증 완료
   try {
     const userToken = req.headers.authorization;
+    if(!userToken) return res.status(403).json({"msg": "로그인을 해주세요"})
     const TokenServiceInstance = Container.get(TokenService);
-    const response:string | object = TokenServiceInstance.verifyToken(userToken);
+    const response:string | IToken = TokenServiceInstance.verifyToken(userToken);
     req.verifiedToken = response;
     return next();
   }
