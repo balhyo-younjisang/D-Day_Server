@@ -28,6 +28,7 @@ export default class TokenService {
     }
 
   public async LoginToken(data): Promise<String> {
+    console.log(data)
     try {
         const token = jwt.sign({
             id : data.id, 
@@ -39,6 +40,7 @@ export default class TokenService {
         });
         return token;
     } catch (e) {
+      console.log(e);
       throw e;
     }
   }

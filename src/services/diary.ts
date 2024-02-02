@@ -19,13 +19,14 @@ export default class DiaryService {
 
     public async getMyDiaries(author: string){
         try {
-            const diaryItems = await firebase.getDoc(firebase.collection(database, 'diary'));
+            const diaryItems = await firebase.getDocs(firebase.collection(database, 'diary'));
             const itemsArray = diaryItems.docs.map((doc) => {
-                if(author === doc.author){
+                console.log(`${author}, ${doc.data().diaryData.uid}`);
+                if(author === doc.data().diaryData.uid){
                     return { id: doc.id, ...doc.data() };
                 }
             });
-            console.log(itemsArray);
+            return itemsArray;
         } catch (error) {
             console.log(error);
         }

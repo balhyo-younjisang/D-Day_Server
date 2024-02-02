@@ -76,6 +76,7 @@ export default (app: Router) => {
           password: password,
           id: id
       });
+      console.log(loginUser);
       const loginToken = await tokenServiceInstance.LoginToken(loginUser[0]);
   
       res.status(201).json({ token: loginToken });

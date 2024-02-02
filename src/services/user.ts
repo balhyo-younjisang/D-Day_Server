@@ -37,12 +37,13 @@ export default class UserService {
       const userDocs = await getDocs(collection(database, 'users'));
       const users = userDocs.docs.map((doc) => {
         const userData = doc.data().userInputDTO;
+        console.log(`${userDTO.id}, ${userData.id}, ${userDTO.password}, ${userData.password}`)
         if (userDTO.id === userData.id && userDTO.password === userData.password) {
 
           const { password, ...userWithoutPassword } = userData;
           return userWithoutPassword;
         }
-        return null;
+        throw Error;
       });
 
       const validUsers = users.filter((user) => user !== null);

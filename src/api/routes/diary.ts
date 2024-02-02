@@ -15,9 +15,10 @@ export default (app: Router) => {
         const user = req.params.user;
         const userToken = req.verifiedToken;
         if(userToken instanceof Object){
-            if(userToken.id === user) return res.status(403).json({"msg":"권한 없음"});
+            if(userToken.id !== user) return res.status(403).json({"msg":"권한 없음"});
         }
-        const myDiaries = DiaryServiceInstance.getMyDiaries(user);
+        const myDiaries = await DiaryServiceInstance.getMyDiaries(user);
+        return res.status(201).json({"diaries" : myDiaries})
     })
     route.post('/makeDiary', verifyToken, async(req:NextRequest, res:Response)=>{
         const userToken = req.verifiedToken;
