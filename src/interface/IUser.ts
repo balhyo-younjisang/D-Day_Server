@@ -8,7 +8,8 @@ export interface IUserDTO extends IUser{
 }
 export interface IUserSDTO extends IUser{
     password: string,
-    profile: string
+    profile: Buffer | string,
+    mimetype: string
 }
 export interface IUserOAuthDTO extends IUserDTO{
     email: string

@@ -1,9 +1,10 @@
-import { auth, database } from "@/config/firebase";
+import { auth, database, firestorage } from "@/config/firebase";
 import { IUser, IUserLoginDTO, IUserOAuthDTO, IUserSDTO, IUserSignDTO } from "@/interface/IUser";
 import { error } from "console";
 import { storage } from "firebase-admin";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, doc, setDoc, addDoc, getDocs } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Inject, Service } from "typedi";
 const firebase = require('firebase/storage');
 const storageRef = firebase.ref();
@@ -25,6 +26,15 @@ export default class UserService {
           throw Error;
         }
       });
+      const locationRef = ref(
+        firestorage,
+        `profile/${userInputDTO.id}`
+      )
+      if(userInputDTO.profile instanceof Buffer){
+        const result = await uploadBytes(locationRef, userInputDTO.profile, {contentType: userInputDTO.mimetype});
+        const imgurl = await getDownloadURL(result.ref);
+        userInputDTO.profile = imgurl
+      }
       const user = await addDoc(collection(database, 'users'), {userInputDTO});
       console.log(user);
       return "hi";

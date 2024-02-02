@@ -41,23 +41,15 @@ export default (app: Router) => {
   route.post('/register', upload.single('image'), async (req: MulterRequest, res: Response, next: NextFunction) => {
     try {
       const imageBuffer = req.file.buffer;
-      console.log(req.file.mimetype);
-      const base64Image = imageBuffer.toString('base64');
       const {id, name, password } = req.body;
-      const locationRef = ref(
-        firestorage,
-        `profile/${id}`
-      )
-      const result = await uploadBytes(locationRef, imageBuffer, {contentType: req.file.mimetype});
-      const imgurl = await getDownloadURL(result.ref);
-      console.log(imgurl);
   
       const userServiceInstance = Container.get(UserService);
       const emailRegistered = await userServiceInstance.SignUp({
           name: name,
           password: password,
-          profile: imgurl,
-          id: id
+          profile: imageBuffer,
+          id: id,
+          mimetype: req.file.mimetype
       });
   
       res.status(201).json({ email: emailRegistered });
