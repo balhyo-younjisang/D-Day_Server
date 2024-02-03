@@ -38,7 +38,11 @@ export default (app: Router) => {
 
   })
   route.get('/:user',verifyToken ,async (req:NextRequest, res:Response) => {
-    const user = req.params.user;
-    const userToken = req.verifiedToken;
+    try {
+      const user = req.params.user;
+      const userToken = req.verifiedToken;
+    } catch (error) {
+      
+    }
   })
 }
