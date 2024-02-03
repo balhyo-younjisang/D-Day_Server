@@ -9,5 +9,5 @@ export interface IDiary extends Object{
     uid: string;
 }
 export interface IDiaryDTO extends IDiary {
-    id: string
+    id: number
 }

@@ -30,12 +30,23 @@ export default (app: Router) => {
                 title: req.body.title,
                 contents: req.body.contents,
                 tags: req.body.tags,
+                id: Date.now()
             }
+            console.log(reqObj);
             const result = DiaryServiceInstance.makeDiary(reqObj);
         }
     })
     route.delete('/deleteDiary', verifyToken, async(req:NextRequest, res:Response)=>{
-        const userToken = req.verifiedToken;
+        try {
+            const userToken = req.verifiedToken;
+            const {id} = req.body;
+            if(userToken instanceof Object){
+                const result = await DiaryServiceInstance.deleteDiary(id, userToken.id);
+            }
+            res.status(201).json({"msg":"diary deleted"})
+        } catch (error) {
+            res.status(500).json({"msg":"failed delete diary"});
+        }
     })
     route.patch('/editDiary', verifyToken, async(req:NextRequest, res:Response)=>{
         const userToken = req.verifiedToken;

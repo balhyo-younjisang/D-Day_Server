@@ -73,7 +73,7 @@ export default (app: Router) => {
   
       res.status(201).json({ token: loginToken });
     } catch (e) {
-      console.log(e);
+      res.status(403).json({"msg":"user not found"});
       next(e);
     }
   });

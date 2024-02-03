@@ -1,6 +1,6 @@
 import { IDiary, IDiaryDTO } from "@/interface/IDiary";
 import { Inject, Service } from "typedi";
-import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc} from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc, getDocs, deleteDoc} from "firebase/firestore";
 import { auth, database } from "@/config/firebase";
 const firebase = require('firebase/firestore')
 
@@ -8,7 +8,7 @@ const firebase = require('firebase/firestore')
 export default class DiaryService {
     constructor(@Inject("logger") private logger) {}
 
-    public async makeDiary(diaryData: IDiary){
+    public async makeDiary(diaryData: IDiaryDTO){
         try{
             console.log(diaryData);
             const user = await addDoc(collection(database, 'diary'), {diaryData});
@@ -58,6 +58,18 @@ export default class DiaryService {
             });
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    public async deleteDiary(id:string, uid:string){
+        try {
+            const diaryItems = await getDocs(collection(database, 'diary'));
+            const result = diaryItems.forEach((doc) => {
+                if(doc.data().diaryData.id === id && doc.data().diaryData.uid === uid) deleteDoc(doc.ref);
+            })
+            return result;
+        } catch (error) {
+            throw Error;
         }
     }
 }
