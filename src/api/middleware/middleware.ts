@@ -18,6 +18,7 @@ export const verifyToken = (req: NextRequest, res: Response, next: NextFunction)
     if(!userToken) return res.status(403).json({"msg": "로그인을 해주세요"})
     const TokenServiceInstance = Container.get(TokenService);
     const response:string | IToken = TokenServiceInstance.verifyToken(userToken);
+    console.log(response);
     req.verifiedToken = response;
     return next();
   }

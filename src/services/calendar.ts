@@ -1,33 +1,36 @@
 import { ITodo, ICalendar, INote } from "@/interface/ICalender";
 import { Inject, Service } from "typedi";
-import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc, getDocs, deleteDoc, query, where, QuerySnapshot, DocumentSnapshot, DocumentData } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc, getDocs, deleteDoc, query, where, QuerySnapshot, DocumentSnapshot, DocumentData, arrayUnion } from "firebase/firestore";
 import { auth, database } from "@/config/firebase";
 
 @Service()
 export default class CalendarService {
     constructor(@Inject("logger") private logger) {}
 
-    public async makeTodo(todo: ITodo, Icalendar: ICalendar){
+    public async makeTodo(Icalendar: ICalendar){
         try {
             // const calendarRef = doc(collection(getFirestore(), "calendars"), String(calendarId));
             console.log(Icalendar);
             if(!Icalendar.id){
                 Icalendar.id = Date.now();
+                console.log(`받아온 데이터 ${Icalendar}`);
                 const user = await addDoc(collection(database, 'calendar'), {Icalendar});
                 return user;
             }
             const calendarItems = await getDocs(collection(database, 'calendar'));
             const calendarRef = calendarItems.docs.map((doc) => {
-                if(Icalendar.id === doc.data().id){
+                console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+                if(Icalendar.id === doc.data().Icalendar.id){
                     return doc.ref;
                 } else{
                     return null;
                 }
-            });
+            }).filter((ref) => ref !== null);
             const docSnap = await getDoc(calendarRef[0]);
             const calendarData = docSnap.data();
+            console.log(Icalendar.Todo);
             await updateDoc(calendarRef[0], {
-                todos: [...calendarData.todos, todo],
+                'Icalendar.Todo': arrayUnion(Icalendar.Todo[0]),
             });
             return;
         } catch (error) {

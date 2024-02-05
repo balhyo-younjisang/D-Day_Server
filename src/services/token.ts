@@ -21,7 +21,7 @@ export default class TokenService {
       
       catch(error) {
         if (error instanceof TokenExpiredError) {
-          return "Token expired";
+          throw error;
         }
         return ""
       }    

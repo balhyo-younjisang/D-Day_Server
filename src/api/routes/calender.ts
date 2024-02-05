@@ -15,34 +15,35 @@ const upload: Multer = multer({ storage: storage });
 export default (app: Router) => {
     app.use(`/calendar`, route);
     const CalendarServiceInstance = Container.get(CalendarService);
-    route.post('/makeTodo', verifyToken, async (req: MulterRequest, res: Response) => {
+    route.post('/makeTodo', verifyToken, upload.single('image'), async (req: MulterRequest, res: Response) => {
         const userToken = req.verifiedToken;
         try {
           if (userToken instanceof Object) {
             const uid = userToken.id;
             const { year, month, date, startTime, endTime, contents, calendarId } = req.body;
-            let imageBuffer,mimeType = null;
+            let imageBuffer = null;
+            let mimeType = null;
             if (req.file && req.file.buffer instanceof Buffer) {
                 imageBuffer = req.file.buffer;
                 mimeType = req.file.mimetype;
-              }
+            }
             const id = Date.now();
             
             const result = await CalendarServiceInstance.makeTodo(
-              {
-                id: id,
-                startTime: startTime,
-                endTime: endTime,
-                contents: contents,
-                img: imageBuffer,
-                mimeType: mimeType,
-              },
               {
                 year: year,
                 month: month,
                 date: date,
                 id: calendarId,
                 uid: uid,
+                Todo: [{
+                    id: id,
+                    startTime: startTime,
+                    endTime: endTime,
+                    contents: contents,
+                    img: imageBuffer,
+                    mimeType: mimeType,
+                }]
               }
             );
             return res.status(201).json({"msg": "todo suceess"})
