@@ -1,6 +1,6 @@
 import { ITodo, ICalendar, INote } from "@/interface/ICalender";
 import { Inject, Service } from "typedi";
-import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc, getDocs, deleteDoc, query, where, QuerySnapshot, DocumentSnapshot, DocumentData, arrayUnion } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc, getDoc, updateDoc, getDocs, deleteDoc, query, where, QuerySnapshot, DocumentSnapshot, DocumentData, arrayUnion, arrayRemove } from "firebase/firestore";
 import { auth, database } from "@/config/firebase";
 
 @Service()
@@ -35,39 +35,52 @@ export default class CalendarService {
             return;
         } catch (error) {
             console.log(error);
-            throw Error;
+            throw error;
         }
     }
 
-    public async editTodo(calendarId: number, todoId: number, updatedTodo: ITodo): Promise<void> {
-        // try {
-        //     const calendarRef = doc(collection(getFirestore(), "calendars"), String(calendarId));
-        //     const updatedTodos = calendar.todos.map((t) => (t.id === todoId ? updatedTodo : t));
-        //     await updateDoc(calendarRef, { todos: updatedTodos });
-        // } catch (error) {
-        //     console.log(error);
-        // }
+    public async editTodo(calendarId: number, todoId: number): Promise<void> {
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarRef = calendarItems.docs.map((doc) => {
+                console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+                if(calendarId=== doc.data().Icalendar.id){
+                    return doc.ref;
+                } else{
+                    return null;
+                }
+            }).filter((ref) => ref !== null);
+            await updateDoc(calendarRef[0], {
+                // 'Icalendar.Todo': arrayRemove(Icalendar.Todo[0]),
+            });
+            return;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
     public async deleteTodo(calendarId: number, todoId: number): Promise<void> {
-        // try {
-        //     const calendarRef = doc(collection(getFirestore(), "calendars"), String(calendarId));
-        //     const updatedTodos = calendar.todos.filter((t) => t.id !== todoId);
-        //     await updateDoc(calendarRef, { todos: updatedTodos });
-        // } catch (error) {
-        //     console.log(error);
-        // }
-    }
-
-    public async makeNote(calendarId: number, note: INote): Promise<void> {
-        // try {
-        //     const calendarRef = doc(collection(getFirestore(), "calendars"), String(calendarId));
-        //     await updateDoc(calendarRef, {
-        //         notes: [...calendar.notes, note],
-        //     });
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarRef = calendarItems.docs.map((doc) => {
+                console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+                if (calendarId === doc.data().Icalendar.id) {
+                    return doc.ref;
+                } else {
+                    return null;
+                }
+            }).filter((ref) => ref !== null);
+    
+            await updateDoc(calendarRef[0], {
+                'Icalendar.Todo': arrayRemove({ id: todoId }),
+            });
+    
+            return;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
     public async editNote(calendarId: number, noteId: number, updatedNote: INote): Promise<void> {

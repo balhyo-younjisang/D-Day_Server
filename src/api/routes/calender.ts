@@ -62,16 +62,19 @@ export default (app: Router) => {
     })
     route.delete('/deleteTodo', verifyToken, (req:Request, res:Response) => {
         try {
-            
+            const {calendarId, todoId} = req.body;
+            const result = CalendarServiceInstance.deleteTodo(calendarId, todoId);
+            res.status(201).json({"msg" : "삭제 와ㅏㄴ료"});
         } catch (error) {
             console.log(error);
+            res.status(500).json({"msg": "삭제 실패"})
         }
     })
     route.post('/makeNote', verifyToken, (req:Request, res:Response) => {
         try {
             
         } catch (error) {
-            
+
         }
     })
     route.patch('/editNote', verifyToken, (req:Request, res:Response) => {
