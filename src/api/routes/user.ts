@@ -7,15 +7,16 @@ import { IUser, IUserSignDTO } from "@/interface/IUser";
 import TokenService from "@/services/token";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { firestorage } from "@/config/firebase";
+import { NextRequest } from "../middleware/middleware";
 
 const route = Router();
 const storage = multer.memoryStorage();
 const upload: Multer = multer({ storage: storage });
 
-interface MulterRequest extends Request {
-  file: {
-    buffer: Buffer;
-    mimetype: string;
+export interface MulterRequest extends NextRequest {
+  file?: {
+    buffer?: Buffer;
+    mimetype?: string;
   };
 }
 

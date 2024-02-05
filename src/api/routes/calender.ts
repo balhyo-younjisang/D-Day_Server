@@ -1,26 +1,57 @@
 import DiaryService from "@/services/diary";
 import { Router, Request, Response, NextFunction } from "express";
 import { Container } from "typedi";
+import multer, { Multer } from 'multer';
 import { NextRequest, verifyToken } from "../middleware/middleware";
+import CalendarService from "@/services/calendar";
+import { IToken } from "@/interface/IToken";
+import { MulterRequest } from "./user";
 
 const route = Router();
 
-
+const storage = multer.memoryStorage();
+const upload: Multer = multer({ storage: storage });
 
 export default (app: Router) => {
-    app.use(`/calender`, route);
-    // const DiaryServiceInstance = Container.get(DiaryService);
-    route.post('/makeTodo', verifyToken, (req:Request, res:Response) => {
+    app.use(`/calendar`, route);
+    const CalendarServiceInstance = Container.get(CalendarService);
+    route.post('/makeTodo', verifyToken, async (req: MulterRequest, res: Response) => {
+        const userToken = req.verifiedToken;
         try {
+          if (userToken instanceof Object) {
+            const uid = userToken.id;
+            const { year, month, date, startTime, endTime, contents, calendarId } = req.body;
+            let imageBuffer,mimeType = null;
+            if (req.file && req.file.buffer instanceof Buffer) {
+                imageBuffer = req.file.buffer;
+                mimeType = req.file.mimetype;
+              }
+            const id = Date.now();
             
+            const result = await CalendarServiceInstance.makeTodo(
+              {
+                id: id,
+                startTime: startTime,
+                endTime: endTime,
+                contents: contents,
+                img: imageBuffer,
+                mimeType: mimeType,
+              },
+              {
+                year: year,
+                month: month,
+                date: date,
+                id: calendarId,
+                uid: uid,
+              }
+            );
+            return res.status(201).json({"msg": "todo suceess"})
+          }
         } catch (error) {
-            try {
-            
-            } catch (error) {
-                console.log(error);
-            }
+          console.log(error);
+          return res.status(500).json({"msg": "todo failed"})
         }
-    })
+      });
     route.patch('/editTodo', verifyToken, (req:Request, res:Response) => {
         try {
             
@@ -57,6 +88,20 @@ export default (app: Router) => {
         }
     })
     route.post('/calenderData', verifyToken, (req:Request, res:Response) => {
+        try {
+            
+        } catch (error) {
+            console.log(error);
+        }
+    })
+    route.post('/applyCalender', verifyToken, (req:Request, res:Response) => {
+        try {
+            
+        } catch (error) {
+            console.log(error);
+        }
+    })
+    route.post('/acceptUser', verifyToken, (req:Request, res:Response) => {
         try {
             
         } catch (error) {
