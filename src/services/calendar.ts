@@ -124,4 +124,29 @@ export default class CalendarService {
             })
         })
     }
+    public async acceptUser(aid: string, uid:string, isAccept: boolean){
+        const calendarItems = await getDocs(collection(database, 'calendar'));
+        const calendarRef = calendarItems.docs.map((doc) => {
+            console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+            if(uid === doc.data().uid){
+                return doc.ref;
+            } else{
+                return null;
+            }
+        }).filter((ref) => ref !== null);
+        if(isAccept){
+            calendarRef.map((ref)=>{
+                updateDoc(ref, {
+                    vid: arrayUnion(aid),
+                    aid: arrayRemove(aid)
+                })
+            })
+        } else{
+            calendarRef.map((ref)=>{
+                updateDoc(ref, {
+                    aid: arrayRemove(aid)
+                })
+            })
+        }
+    }
 }
