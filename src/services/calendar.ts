@@ -108,4 +108,20 @@ export default class CalendarService {
             throw error;
         }
     }
+    public async applyCalender(aid: string, uid: string){
+        const calendarItems = await getDocs(collection(database, 'calendar'));
+        const calendarRef = calendarItems.docs.map((doc) => {
+            console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+            if(uid === doc.data().uid){
+                return doc.ref;
+            } else{
+                return null;
+            }
+        }).filter((ref) => ref !== null);
+        calendarRef.map((ref)=>{
+            updateDoc(ref, {
+                aid: arrayUnion(aid)
+            })
+        })
+    }
 }
