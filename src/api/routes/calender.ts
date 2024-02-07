@@ -98,11 +98,18 @@ export default (app: Router) => {
             console.log(error);
         }
     })
-    route.post('/applyCalender', verifyToken, (req:Request, res:Response) => {
+    route.post('/applyCalender', verifyToken, async (req:NextRequest, res:Response) => {
         try {
-            
+            const userToken = req.verifiedToken;
+            if(userToken instanceof Object){
+                const {id} = userToken;
+                const uid = req.body.uid;
+                const result = await CalendarServiceInstance.applyCalender(id, uid);
+                res.status(201).json({"msg":"applied successful"})
+            }
         } catch (error) {
             console.log(error);
+            res.status(500).json({"msg":"applied failed"})
         }
     })
     route.post('/acceptUser', verifyToken, (req:Request, res:Response) => {

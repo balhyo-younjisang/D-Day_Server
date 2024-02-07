@@ -35,7 +35,7 @@ export default class TokenService {
             profile: data.profile,
             name : data.name,
         }, process.env.JWT_SECRET, {
-            expiresIn: '3h',
+            expiresIn: '3d',
             issuer: '토큰 발급자'
         });
         return token;

@@ -62,6 +62,7 @@ export default (app: Router) => {
   route.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {id, password } = req.body;
+      console.log(req.body);
   
       const userServiceInstance = Container.get(UserService);
       const tokenServiceInstance = Container.get(TokenService);
