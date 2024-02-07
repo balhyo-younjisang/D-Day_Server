@@ -105,18 +105,29 @@ export default (app: Router) => {
                 const {id} = userToken;
                 const uid = req.body.uid;
                 const result = await CalendarServiceInstance.applyCalender(id, uid);
-                res.status(201).json({"msg":"applied successful"})
+                console.log(result);
+                if(result === 409) return res.status(409).json({"msg": "already exist"});
+                return res.status(201).json({"msg":"applied successful"})
             }
         } catch (error) {
             console.log(error);
-            res.status(500).json({"msg":"applied failed"})
+            return res.status(500).json({"msg":"applied failed"})
         }
     })
-    route.post('/acceptUser', verifyToken, (req:Request, res:Response) => {
+    route.post('/acceptUser', verifyToken, async (req:NextRequest, res:Response) => {
         try {
-            
+            const userToken = req.verifiedToken;
+            if(userToken instanceof Object){
+                const {id} = userToken;
+                const {uid, isAccept} = req.body;
+                const result = await CalendarServiceInstance.acceptUser(id, uid, isAccept);
+                console.log(result);
+                if(result === 409) return res.status(409).json({"msg": "already exist"});
+                return res.status(201).json({"msg":"applied successful"})
+            }
         } catch (error) {
             console.log(error);
+            return res.status(500).json({"msg":"applied failed"})
         }
     })
 

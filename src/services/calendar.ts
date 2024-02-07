@@ -92,13 +92,12 @@ export default class CalendarService {
     public async deleteTodo(calendarId: number, todoId: number): Promise<void> {
         try {
             const calendarItems = await getDocs(collection(database, 'calendar'));
-            // const calendarData = calendarItems.docs[0];
-            // const updatedTodoArray = calendarData.data().Icalendar.Todo;
             const calendarData = calendarItems.docs.map((doc)=>{
                 if(calendarId === doc.data().Icalendar.id){
                     return doc;
                 }
-            })
+                return null;
+            }).filter((element)=>element!==null);
             const updatedTodoArray = calendarData[0].data().Icalendar.Todo;
             
             const indexToFind =  updatedTodoArray.findIndex((todo) => todo.id === todoId);
@@ -118,44 +117,56 @@ export default class CalendarService {
         }
     }
     public async applyCalender(aid: string, uid: string){
-        const calendarItems = await getDocs(collection(database, 'calendar'));
-        const calendarRef = calendarItems.docs.map((doc) => {
-            console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
-            if(uid === doc.data().uid){
-                return doc.ref;
-            } else{
-                return null;
-            }
-        }).filter((ref) => ref !== null);
-        calendarRef.map((ref)=>{
-            updateDoc(ref, {
-                aid: arrayUnion(aid)
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarData = calendarItems.docs.map((doc)=>{
+                if(uid === doc.data().Icalendar.uid){
+                    return doc;
+                }
             })
-        })
+            const updatedTodoArray = calendarData[0].data().Icalendar.aid;
+            if(!updatedTodoArray){
+                await updateDoc(calendarData[0].ref, {
+                    'Icalendar.aid': [aid]
+                })
+                return 201;
+            }
+            if(updatedTodoArray.includes(aid)) return 409;
+            updatedTodoArray.push(aid);
+
+            await updateDoc(calendarData[0].ref, {
+                'aid': updatedTodoArray
+            })
+            
+            return;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
     public async acceptUser(aid: string, uid:string, isAccept: boolean){
-        const calendarItems = await getDocs(collection(database, 'calendar'));
-        const calendarRef = calendarItems.docs.map((doc) => {
-            console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
-            if(uid === doc.data().uid){
-                return doc.ref;
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarData = calendarItems.docs.map((doc)=>{
+                if(uid === doc.data().Icalendar.uid){
+                    return doc;
+                }
+            })
+            if(isAccept){
+                await updateDoc(calendarData[0].ref, {
+                    'Icalendar.aid': arrayRemove(aid),
+                    'Icalendar.vid': arrayUnion(aid)
+                })
+                return 201;
             } else{
-                return null;
+                await updateDoc(calendarData[0].ref, {
+                    'Icalendar.aid': arrayRemove(aid),
+                })
+                return 201;
             }
-        }).filter((ref) => ref !== null);
-        if(isAccept){
-            calendarRef.map((ref)=>{
-                updateDoc(ref, {
-                    vid: arrayUnion(aid),
-                    aid: arrayRemove(aid)
-                })
-            })
-        } else{
-            calendarRef.map((ref)=>{
-                updateDoc(ref, {
-                    aid: arrayRemove(aid)
-                })
-            })
+        } catch (error) {
+            console.log(error);
+            throw error;
         }
     }
 }
