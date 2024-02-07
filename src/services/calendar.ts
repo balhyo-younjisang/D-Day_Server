@@ -92,16 +92,14 @@ export default class CalendarService {
     public async deleteTodo(calendarId: number, todoId: number): Promise<void> {
         try {
             const calendarItems = await getDocs(collection(database, 'calendar'));
-            // const calendarRef = calendarItems.docs.map((doc) => {
-            //     console.log(`돌려보는 데이터들 ${ doc.data().Icalendar}`)
-            //     if (calendarId === doc.data().Icalendar.id) {
-            //         return doc.ref;
-            //     } else {
-            //         return null;
-            //     }
-            // }).filter((ref) => ref !== null);
-            const calendarData = calendarItems.docs[0];
-            const updatedTodoArray = calendarData.data().Icalendar.Todo;
+            // const calendarData = calendarItems.docs[0];
+            // const updatedTodoArray = calendarData.data().Icalendar.Todo;
+            const calendarData = calendarItems.docs.map((doc)=>{
+                if(calendarId === doc.data().Icalendar.id){
+                    return doc;
+                }
+            })
+            const updatedTodoArray = calendarData[0].data().Icalendar.Todo;
             
             const indexToFind =  updatedTodoArray.findIndex((todo) => todo.id === todoId);
             if(indexToFind <= -1) return;
@@ -109,7 +107,7 @@ export default class CalendarService {
             updatedTodoArray.splice(indexToFind, 1);
             console.log(updatedTodoArray);
 
-            await updateDoc(calendarData.ref, {
+            await updateDoc(calendarData[0].ref, {
                 'Icalendar.Todo': updatedTodoArray
             })
             
