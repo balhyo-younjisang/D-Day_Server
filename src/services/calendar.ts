@@ -26,9 +26,13 @@ export default class CalendarService {
                 }
             }).filter((ref) => ref !== null);
             console.log(Icalendar.Todo);
-            await updateDoc(calendarRef[0], {
+            const calRef = calendarRef[0];
+            console.log(calRef);
+
+            const result = await updateDoc(calRef, {
                 'Icalendar.Todo': arrayUnion(Icalendar.Todo[0]),
             });
+            
             return;
         } catch (error) {
             console.log(error);
@@ -88,20 +92,27 @@ export default class CalendarService {
     public async deleteTodo(calendarId: number, todoId: number): Promise<void> {
         try {
             const calendarItems = await getDocs(collection(database, 'calendar'));
-            const calendarRef = calendarItems.docs.map((doc) => {
-                console.log(`돌려보는 데이터들 ${JSON.stringify(doc.data().Icalendar)}`)
-                if (calendarId === doc.data().Icalendar.id) {
-                    return doc.ref;
-                } else {
-                    return null;
-                }
-            }).filter((ref) => ref !== null);
-    
-            const result = await updateDoc(calendarRef[0], {
-                'Icalendar.Todo': arrayRemove({ id: todoId }),
-            });
-            console.log(calendarRef);
-    
+            // const calendarRef = calendarItems.docs.map((doc) => {
+            //     console.log(`돌려보는 데이터들 ${ doc.data().Icalendar}`)
+            //     if (calendarId === doc.data().Icalendar.id) {
+            //         return doc.ref;
+            //     } else {
+            //         return null;
+            //     }
+            // }).filter((ref) => ref !== null);
+            const calendarData = calendarItems.docs[0];
+            const updatedTodoArray = calendarData.data().Icalendar.Todo;
+            
+            const indexToFind =  updatedTodoArray.findIndex((todo) => todo.id === todoId);
+            if(indexToFind <= -1) return;
+            
+            updatedTodoArray.splice(indexToFind, 1);
+            console.log(updatedTodoArray);
+
+            await updateDoc(calendarData.ref, {
+                'Icalendar.Todo': updatedTodoArray
+            })
+            
             return;
         } catch (error) {
             console.log(error);
