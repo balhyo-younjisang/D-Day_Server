@@ -122,9 +122,12 @@ export default (app: Router) => {
     })
     route.delete('/deleteNote', verifyToken, (req:Request, res:Response) => {
         try {
-            
+            const {calendarId, noteId} = req.body;
+            const result = CalendarServiceInstance.deleteNote(calendarId, noteId);
+            res.status(201).json({"msg" : "삭제 와ㅏㄴ료"});
         } catch (error) {
             console.log(error);
+            res.status(500).json({"msg": "삭제 실패"})
         }
     })
     route.post('/calenderData', verifyToken, (req:Request, res:Response) => {

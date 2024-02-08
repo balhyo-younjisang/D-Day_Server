@@ -160,6 +160,32 @@ export default class CalendarService {
             throw error;
         }
     }
+    public async deleteNote(calendarId: number, noteId: number) {
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarData = calendarItems.docs.map((doc)=>{
+                if(calendarId === doc.data().Icalendar.id){
+                    return doc;
+                }
+                return null;
+            }).filter((element)=>element!==null);
+            const updatedNoteArray = calendarData[0].data().Icalendar.note;
+            
+            const indexToFind =  updatedNoteArray.findIndex((note) => note.id === noteId);
+            if(indexToFind <= -1) return;
+            
+            updatedNoteArray.splice(indexToFind, 1);
+
+            await updateDoc(calendarData[0].ref, {
+                'Icalendar.note': updatedNoteArray
+            })
+            
+            return;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
     public async applyCalender(aid: string, uid: string){
         try {
             const calendarItems = await getDocs(collection(database, 'calendar'));
