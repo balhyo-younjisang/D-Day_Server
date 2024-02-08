@@ -18,7 +18,9 @@ export default class CalendarService {
                 if(Icalendar.id === doc.data().Icalendar.id){
                     return doc;
                 }
-            })
+                return null;
+            }).filter((element) => element !== null);
+            console.log(calendarData);
             const updatedTodoArray = calendarData[0].data().Icalendar.Todo;
             if(!updatedTodoArray){
                 await updateDoc(calendarData[0].ref, {
@@ -49,7 +51,8 @@ export default class CalendarService {
                 if(Icalendar.id === doc.data().Icalendar.id){
                     return doc;
                 }
-            })
+                return null;
+            }).filter((element) => element !== null);
             const updatedTodoArray = calendarData[0].data().Icalendar.note;
             if(!updatedTodoArray){
                 console.log(Icalendar.note);
@@ -71,25 +74,33 @@ export default class CalendarService {
         }
     }
 
-    public async editTodo(calendarId: number, todoId: number): Promise<void> {
-        try {
-            const calendarItems = await getDocs(collection(database, 'calendar'));
-            const calendarRef = calendarItems.docs.map((doc) => {
-                console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
-                if(calendarId=== doc.data().Icalendar.id){
-                    return doc.ref;
-                } else{
+    public async editTodo(calendarId: number, todo: ITodo): Promise<void> {
+            try {
+                const calendarItems = await getDocs(collection(database, 'calendar'));
+                const calendarData = calendarItems.docs.map((doc)=>{
+                    if(calendarId === doc.data().Icalendar.id){
+                        return doc;
+                    }
                     return null;
-                }
-            }).filter((ref) => ref !== null);
-            await updateDoc(calendarRef[0], {
-                // 'Icalendar.Todo': arrayRemove(Icalendar.Todo[0]),
-            });
-            return;
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
+                }).filter((element)=>element!==null);
+                let updatedTodoArray = calendarData[0].data().Icalendar.Todo;
+                updatedTodoArray = updatedTodoArray.map((element) => {
+                    if (element.id === todo.id) {
+                        return todo;
+                    } else {
+                        return element;
+                    }
+                });
+    
+                await updateDoc(calendarData[0].ref, {
+                    'Icalendar.Todo': updatedTodoArray
+                })
+                
+                return;
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
     }
 
     public async deleteTodo(calendarId: number, todoId: number): Promise<void> {

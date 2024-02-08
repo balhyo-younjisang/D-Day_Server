@@ -53,11 +53,14 @@ export default (app: Router) => {
           return res.status(500).json({"msg": "todo failed"})
         }
       });
-    route.patch('/editTodo', verifyToken, (req:Request, res:Response) => {
+    route.patch('/editTodo', verifyToken, async (req:Request, res:Response) => {
         try {
-            
+            const {calendarId, todo} = req.body;
+            const result = await CalendarServiceInstance.editTodo(calendarId, todo);
+            res.status(201).json({"msg":"edit success"});
         } catch (error) {
             console.log(error);
+            res.status(500).json({"msg":"edit failed"})
         }
     })
     route.delete('/deleteTodo', verifyToken, (req:Request, res:Response) => {
