@@ -9,6 +9,10 @@ export default class CalendarService {
 
     public async makeTodo(Icalendar: ICalendar){
         try {
+            if(!Icalendar.id){ 
+                Icalendar.id = Date.now();
+                return await addDoc(collection(database, 'calendar'), {Icalendar})
+            };
             const calendarItems = await getDocs(collection(database, 'calendar'));
             const calendarData = calendarItems.docs.map((doc)=>{
                 if(Icalendar.id === doc.data().Icalendar.id){
@@ -36,6 +40,10 @@ export default class CalendarService {
     }
     public async makeNote(Icalendar: ICalendar){
         try {
+            if(!Icalendar.id){ 
+                Icalendar.id = Date.now();
+                return await addDoc(collection(database, 'calendar'), {Icalendar})
+            };
             const calendarItems = await getDocs(collection(database, 'calendar'));
             const calendarData = calendarItems.docs.map((doc)=>{
                 if(Icalendar.id === doc.data().Icalendar.id){
