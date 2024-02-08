@@ -113,13 +113,6 @@ export default (app: Router) => {
           return res.status(500).json({"msg": "note failed"})
         }
     })
-    route.patch('/editNote', verifyToken, (req:Request, res:Response) => {
-        try {
-            
-        } catch (error) {
-            console.log(error);
-        }
-    })
     route.delete('/deleteNote', verifyToken, (req:Request, res:Response) => {
         try {
             const {calendarId, noteId} = req.body;
@@ -130,9 +123,16 @@ export default (app: Router) => {
             res.status(500).json({"msg": "삭제 실패"})
         }
     })
-    route.post('/calenderData', verifyToken, (req:Request, res:Response) => {
+    route.post('/calenderData', verifyToken, async (req:NextRequest, res:Response) => {
         try {
-            
+            const userToken = req.verifiedToken;
+            if(userToken instanceof Object){
+                const {id} = userToken;
+                const {month, year} = req.body;
+                const result = await CalendarServiceInstance.getDataByMonth(id, month, year);
+                return res.json({"data": result});
+            }
+            return res.status(403).json({"msg":"bad request"});
         } catch (error) {
             console.log(error);
         }

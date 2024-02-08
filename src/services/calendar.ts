@@ -239,4 +239,26 @@ export default class CalendarService {
             throw error;
         }
     }
+    public async getDataByMonth(id: string, month: number, year: number) {
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarData = calendarItems.docs.map((doc)=>{
+                if(id === doc.data().Icalendar.uid || id === doc.data().Icalendar.vid){
+                    return doc;
+                }
+                return null;
+            }).filter((element)=>element!==null);
+            if(!calendarData) return null;
+            const resCalendar = calendarData.map((doc)=>{
+                if(month === doc.data().Icalendar.month && year === doc.data().Icalendar.year){
+                    return doc.data().Icalendar;
+                }
+                return null;
+            }).filter((element)=>element!==null);
+            return resCalendar;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
