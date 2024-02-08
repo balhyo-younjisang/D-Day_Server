@@ -41,26 +41,26 @@ export default class CalendarService {
     }
     public async makeNote(Icalendar: ICalendar){
         try {
-            // const calendarRef = doc(collection(getFirestore(), "calendars"), String(calendarId));
-            console.log(Icalendar);
-            if(!Icalendar.id){
-                Icalendar.id = Date.now();
-                const user = await addDoc(collection(database, 'calendar'), {Icalendar});
-                return user;
-            }
             const calendarItems = await getDocs(collection(database, 'calendar'));
-            const calendarRef = calendarItems.docs.map((doc) => {
-                console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+            const calendarData = calendarItems.docs.map((doc)=>{
                 if(Icalendar.id === doc.data().Icalendar.id){
-                    return doc.ref;
-                } else{
-                    return null;
+                    return doc;
                 }
-            }).filter((ref) => ref !== null);
-            console.log(Icalendar.Todo);
-            await updateDoc(calendarRef[0], {
-                'Icalendar.Note': arrayUnion(Icalendar.Todo[0]),
-            });
+            })
+            const updatedTodoArray = calendarData[0].data().Icalendar.note;
+            if(!updatedTodoArray){
+                console.log(Icalendar.note);
+                await updateDoc(calendarData[0].ref, {
+                    'Icalendar.note': [Icalendar.note[0]]
+                })
+                return 201;
+            }
+            updatedTodoArray.push(Icalendar.note[0]);
+
+            await updateDoc(calendarData[0].ref, {
+                'Icalendar.note': updatedTodoArray
+            })
+            
             return;
         } catch (error) {
             console.log(error);
@@ -135,7 +135,7 @@ export default class CalendarService {
             updatedTodoArray.push(aid);
 
             await updateDoc(calendarData[0].ref, {
-                'aid': updatedTodoArray
+                'Icalendar.aid': updatedTodoArray
             })
             
             return;

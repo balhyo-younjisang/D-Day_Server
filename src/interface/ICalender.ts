@@ -21,5 +21,5 @@ export interface ITodo {
 
 export interface INote {
     id: number,
-    contents: string[]
+    contents: string
 }

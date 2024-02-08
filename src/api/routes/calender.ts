@@ -70,11 +70,34 @@ export default (app: Router) => {
             res.status(500).json({"msg": "삭제 실패"})
         }
     })
-    route.post('/makeNote', verifyToken, (req:Request, res:Response) => {
+    route.post('/makeNote', verifyToken, async (req:NextRequest, res:Response) => {
+        const userToken = req.verifiedToken;
         try {
+          if (userToken instanceof Object) {
+            const uid = userToken.id;
+            const { year, month, date, startTime, endTime, contents, calendarId } = req.body;
+            let imageBuffer = null;
+            let mimeType = null;
+            const id = Date.now();
             
+            const result = await CalendarServiceInstance.makeNote(
+              {
+                year: year,
+                month: month,
+                date: date,
+                id: calendarId,
+                uid: uid,
+                note: [{
+                    id: id,
+                    contents: contents,
+                }]
+              }
+            );
+            return res.status(201).json({"msg": "note suceess"})
+          }
         } catch (error) {
-
+          console.log(error);
+          return res.status(500).json({"msg": "note failed"})
         }
     })
     route.patch('/editNote', verifyToken, (req:Request, res:Response) => {
