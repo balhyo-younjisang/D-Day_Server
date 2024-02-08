@@ -9,29 +9,24 @@ export default class CalendarService {
 
     public async makeTodo(Icalendar: ICalendar){
         try {
-            // const calendarRef = doc(collection(getFirestore(), "calendars"), String(calendarId));
-            console.log(Icalendar);
-            if(!Icalendar.id){
-                Icalendar.id = Date.now();
-                const user = await addDoc(collection(database, 'calendar'), {Icalendar});
-                return user;
-            }
             const calendarItems = await getDocs(collection(database, 'calendar'));
-            const calendarRef = calendarItems.docs.map((doc) => {
-                console.log(`돌려보는 데이터들 ${doc.data().Icalendar}`)
+            const calendarData = calendarItems.docs.map((doc)=>{
                 if(Icalendar.id === doc.data().Icalendar.id){
-                    return doc.ref;
-                } else{
-                    return null;
+                    return doc;
                 }
-            }).filter((ref) => ref !== null);
-            console.log(Icalendar.Todo);
-            const calRef = calendarRef[0];
-            console.log(calRef);
+            })
+            const updatedTodoArray = calendarData[0].data().Icalendar.Todo;
+            if(!updatedTodoArray){
+                await updateDoc(calendarData[0].ref, {
+                    'Icalendar.Todo': [Icalendar.Todo[0]]
+                })
+                return 201;
+            }
+            updatedTodoArray.push(Icalendar.Todo[0]);
 
-            const result = await updateDoc(calRef, {
-                'Icalendar.Todo': arrayUnion(Icalendar.Todo[0]),
-            });
+            await updateDoc(calendarData[0].ref, {
+                'Icalendar.Todo': updatedTodoArray
+            })
             
             return;
         } catch (error) {
