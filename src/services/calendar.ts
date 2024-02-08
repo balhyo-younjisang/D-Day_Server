@@ -103,6 +103,36 @@ export default class CalendarService {
             }
     }
 
+    
+    public async editNote(calendarId: number, note: INote): Promise<void> {
+        try {
+            const calendarItems = await getDocs(collection(database, 'calendar'));
+            const calendarData = calendarItems.docs.map((doc)=>{
+                if(calendarId === doc.data().Icalendar.id){
+                    return doc;
+                }
+                return null;
+            }).filter((element)=>element!==null);
+            let updatedTodoArray = calendarData[0].data().Icalendar.note;
+            updatedTodoArray = updatedTodoArray.map((element) => {
+                if (element.id === note.id) {
+                    return note;
+                } else {
+                    return element;
+                }
+            });
+
+            await updateDoc(calendarData[0].ref, {
+                'Icalendar.note': updatedTodoArray
+            })
+            
+            return;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+}
+
     public async deleteTodo(calendarId: number, todoId: number): Promise<void> {
         try {
             const calendarItems = await getDocs(collection(database, 'calendar'));

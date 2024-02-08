@@ -63,6 +63,16 @@ export default (app: Router) => {
             res.status(500).json({"msg":"edit failed"})
         }
     })
+    route.patch('/editNote', verifyToken, async (req:Request, res:Response) => {
+        try {
+            const {calendarId, note} = req.body;
+            const result = await CalendarServiceInstance.editTodo(calendarId, note);
+            res.status(201).json({"msg":"edit success"});
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({"msg":"edit failed"})
+        }
+    })
     route.delete('/deleteTodo', verifyToken, (req:Request, res:Response) => {
         try {
             const {calendarId, todoId} = req.body;
