@@ -243,8 +243,15 @@ export default class CalendarService {
         try {
             const calendarItems = await getDocs(collection(database, 'calendar'));
             const calendarData = calendarItems.docs.map((doc)=>{
-                if(id === doc.data().Icalendar.uid || id === doc.data().Icalendar.vid){
-                    return doc;
+                const vid = doc.data().Icalendar.vid;
+                if(vid){
+                    if(id === doc.data().Icalendar.uid || vid.includes(id)){
+                        return doc;
+                    }
+                } else{
+                    if(id === doc.data().Icalendar.uid){
+                        return doc;
+                    }
                 }
                 return null;
             }).filter((element)=>element!==null);

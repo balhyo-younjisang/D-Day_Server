@@ -13,4 +13,10 @@ export default (app: Router) => {
     route.post('/makeSchedule', verifyToken, (req:Request, res:Response) => {
 
     })
+    route.patch('/editSchedule', verifyToken, (req:Request, res: Response)=>{
+
+    })
+    route.delete('/deleteSchedule', verifyToken, (req:Request, res:Response)=>{
+        
+    })
 }
