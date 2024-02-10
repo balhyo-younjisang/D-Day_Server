@@ -1,5 +1,7 @@
 export interface IStory {
     dDay : number,
     title: string,
-    img: ImageBitmap[]
+    img: Buffer[],
+    author: string,
+    tags?: string[]
 }
